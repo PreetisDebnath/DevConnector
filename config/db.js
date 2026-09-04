@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
-const config = require('config');
-const db = config.get('mongoURI');
+require('dotenv').config();
+
+const db = process.env.MONGO_URI;
 
 const connectDB = async () => {
   try {
+    if (!db) {
+      throw new Error('MONGO_URI is not configured');
+    }
+
     await mongoose.connect(db);
     console.log('MongoDB Connected...');
   } catch (err) {
