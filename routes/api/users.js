@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const gravatar = require('gravatar');
 const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require('jsonwebtoken');  
@@ -39,22 +38,15 @@ router.post(
           .json({ errors: [{ msg: 'User already exists!' }] });
       }
 
-      const avatar = gravatar.url(
-        normalizedEmail,
-        {
-          s: '200',
-          r: 'pg',
-          d: 'mm',
-        },
-        'https',
-      );
-
       user = new User({
         name,
         email: normalizedEmail,
-        avatar,
-        password,
+        password
       });
+
+      user.avatar = `https://api.dicebear.com/9.x/bottts/svg?seed=${encodeURIComponent(
+        user._id.toString(),
+      )}`;
 
       const salt = await bcrypt.genSalt(10);
 
