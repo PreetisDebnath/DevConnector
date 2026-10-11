@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const config = require('config');
-const jwt = require('jsonwebtoken');  
+const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 
 const User = require('../../models/User');
@@ -41,7 +41,7 @@ router.post(
       user = new User({
         name,
         email: normalizedEmail,
-        password
+        password,
       });
 
       user.avatar = `https://api.dicebear.com/9.x/bottts/svg?seed=${encodeURIComponent(
@@ -55,21 +55,20 @@ router.post(
       await user.save();
 
       const payload = {
-        user:{
-          id: user.id
-        }
-      }
+        user: {
+          id: user.id,
+        },
+      };
 
       jwt.sign(
         payload,
-        config.get('jwtSecret'),
-        {expiresIn: 3600000},
+        process.env.JWT_SECRET || config.get('jwtSecret'),
+        { expiresIn: 3600000 },
         (err, token) => {
-          if(err) throw err;
-          res.json({token});
-        }
+          if (err) throw err;
+          res.json({ token });
+        },
       );
-
     } catch (err) {
       console.log(err.message);
       res.status(500).send('Server Error!');
