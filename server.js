@@ -29,11 +29,11 @@ app.use('/api/auth', require('./routes/api/auth'));
 
 // Serve static assets in production
 if (process.env.NODE_ENV === 'production') {
-  // Set static folder
-  app.use(express.static('client/build'));
+  const clientBuildPath = path.resolve(__dirname, 'client', 'build');
+  app.use(express.static(clientBuildPath));
 
   app.get('{*splat}', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
   });
 } else {
   app.get('/', (req, res) => res.send('API Running!'));
