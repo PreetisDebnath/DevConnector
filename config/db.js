@@ -1,20 +1,35 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-const db = process.env.MONGO_URI;
+let connectionPromise;
+
+mongoose.connection.on('disconnected', () => {
+  connectionPromise = null;
+});
 
 const connectDB = async () => {
-  try {
-    if (!db) {
-      throw new Error('MONGO_URI is not configured');
-    }
-
-    await mongoose.connect(db);
-    console.log('MongoDB Connected...');
-  } catch (err) {
-    console.error(err.message);
-    process.exit(1);
+  if (mongoose.connection.readyState === 1) {
+    return;
   }
+
+  const db = process.env.MONGO_URI;
+  if (!db) {
+    throw new Error('MONGO_URI is not configured');
+  }
+
+  if (!connectionPromise) {
+    connectionPromise = mongoose
+      .connect(db)
+      .then(() => {
+        console.log('MongoDB Connected...');
+      })
+      .catch(error => {
+        connectionPromise = null;
+        throw error;
+      });
+  }
+
+  await connectionPromise;
 };
 
 module.exports = connectDB;

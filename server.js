@@ -4,8 +4,6 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-connectDB();
-
 //Init Middleware
 
 app.use(express.json());
@@ -13,6 +11,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Define Routes
+
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('MongoDB connection failed:', error.message);
+    res.status(503).json({ msg: 'Database connection unavailable' });
+  }
+});
 
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/profile', require('./routes/api/profile'));

@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
-    "config": "^5.0.1",
+    "config": "^4.4.2",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-validator": "^7.3.2",
